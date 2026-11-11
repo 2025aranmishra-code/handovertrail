@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HandoverTrail</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f6f9;--card:#fff;--ink:#14263d;--mute:#56667a;--line:#d3dbe5;--acc:#1d4e89;--accfg:#fff;--mark:#ffe27a;--markfg:#14263d;--ok:#1b6e45;--inf:#8a5a00;--con:#b3261e;--mis:#5b3f9e;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0f1824;--card:#172435;--ink:#e6edf6;--mute:#9fb0c4;--line:#2c3e55;--acc:#6aa5ea;--accfg:#0f1824;--ok:#5cc58f;--inf:#e5b04a;--con:#ff8d84;--mis:#b9a0f5}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0f1824;--card:#172435;--ink:#e6edf6;--mute:#9fb0c4;--line:#2c3e55;--acc:#6aa5ea;--accfg:#0f1824;--ok:#5cc58f;--inf:#e5b04a;--con:#ff8d84;--mis:#b9a0f5}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Source Sans 3",system-ui,sans-serif}
+h1,h2,h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;margin:0}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--line);background:var(--card)}
+h1{font-size:22px}.sub{color:var(--mute);font-size:14px}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:none;color:var(--ink);padding:8px 14px;font:inherit;cursor:pointer}
+.seg button.on{background:var(--acc);color:var(--accfg)}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+main{max-width:1100px;margin:0 auto;padding:18px 20px 60px}
+.guide{background:var(--card);border-left:4px solid var(--acc);padding:10px 14px;border-radius:4px;margin-bottom:16px;font-size:15px}
+nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+nav button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:8px;font:inherit;cursor:pointer}
+nav button.on{border-color:var(--acc);box-shadow:inset 0 -3px 0 var(--acc)}
+.btn{border:0;background:var(--acc);color:var(--accfg);padding:9px 16px;border-radius:8px;font:600 15px inherit;font-family:inherit;cursor:pointer}
+.btn.ghost{background:none;color:var(--ink);border:1px solid var(--line)}
+.btn.sm{padding:5px 10px;font-size:14px}
+.grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px}
+@media(max-width:800px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px}
+.row{cursor:pointer}.row.sel{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc)}
+.badge{display:inline-block;font-size:13px;font-weight:600;padding:1px 9px;border-radius:99px;border:1.5px solid currentColor}
+.Verified{color:var(--ok)}.Inferred{color:var(--inf)}.Conflicting{color:var(--con)}.Missing{color:var(--mis)}
+.meta{color:var(--mute);font-size:14px}
+.src{white-space:pre-wrap;font-size:15px;background:var(--bg);padding:10px;border-radius:6px}
+mark{background:var(--mark);color:var(--markfg);padding:0 2px}
+.red{color:var(--mute);font-style:italic}
+input,textarea{width:100%;font:inherit;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);box-sizing:border-box}
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.tbl{overflow-x:auto}
+.empty{padding:30px;text-align:center;color:var(--mute)}
+.log{font-size:13px;color:var(--mute);margin:2px 0}
+</style></head><body>
+<header><div><h1>HandoverTrail</h1><div class="sub">Demo project: Tech Fest 2026 committee (synthetic data)</div></div>
+<div class="seg" role="group" aria-label="Viewing as"><button data-a="role" data-v="lead">Lead (reviewer)</button><button data-a="role" data-v="member">New member</button></div></header>
+<main id="app"></main>
+<script>
+const SRC=[
+{id:1,title:"Team chat export",access:"public",text:"Priya: Sponsor deck deadline is 15 Nov.\nRahul: Hall B booking confirmed, deposit paid.\nPriya: let's go with the Hindi+English emcee approach.\nRahul: Registration site still flaky on mobile, payments fail sometimes."},
+{id:2,title:"Meeting notes, 3 Nov",access:"public",text:"Sponsor deck due 20 Nov per sponsor liaison email.\nDecision: use Hall B for the main stage.\nAction: finalise volunteer roster.\nCatering vendor quote pending, depends on final headcount."},
+{id:3,title:"Task board export",access:"public",text:"T-14 Volunteer roster | owner: unassigned | due 12 Nov\nT-15 Print posters | owner: Meera | done\nT-16 Fix registration payment bug | owner: Rahul | in progress"},
+{id:4,title:"Registration repo README",access:"public",text:"Registration site depends on the payment gateway API key held by the treasurer. Rotate the key before the event."},
+{id:5,title:"Sponsor negotiation notes",access:"lead",text:"Title sponsor offered 80,000 INR, we countered at 1,00,000. Do not share figures with volunteers until signed."}];
+/* Cached extraction output (stands in for the LLM call). The citation check below is real. */
+const CAND=[
+{k:"decision",t:"Use Hall B for the main stage",o:null,st:"Verified",s:2,sn:"Decision: use Hall B for the main stage"},
+{k:"decision",t:"Run the event with a Hindi+English emcee",o:null,st:"Inferred",s:1,sn:"let's go with the Hindi+English emcee approach"},
+{k:"risk",t:"Sponsor deck deadline is 15 Nov or 20 Nov",o:null,st:"Conflicting",s:1,sn:"Sponsor deck deadline is 15 Nov",alt:[2,"Sponsor deck due 20 Nov"],q:"Which sponsor deck deadline is correct, 15 Nov or 20 Nov?"},
+{k:"next_action",t:"Finalise the volunteer roster (due 12 Nov)",o:null,st:"Missing",s:3,sn:"T-14 Volunteer roster | owner: unassigned | due 12 Nov",q:"Who will own the volunteer roster after you leave?"},
+{k:"blocker",t:"Fix the registration payment bug",o:"Rahul",st:"Verified",s:3,sn:"T-16 Fix registration payment bug | owner: Rahul | in progress"},
+{k:"dependency",t:"Registration depends on the payment gateway key held by the treasurer",o:"Treasurer",st:"Verified",s:4,sn:"Registration site depends on the payment gateway API key held by the treasurer"},
+{k:"risk",t:"Catering quote is pending until final headcount is known",o:null,st:"Verified",s:2,sn:"Catering vendor quote pending, depends on final headcount"},
+{k:"risk",t:"Sponsor negotiation is open and its figures are confidential",o:null,st:"Verified",s:5,sn:"Do not share figures with volunteers until signed"},
+{k:"decision",t:"Merch vendor contract signed with Zenith",o:null,st:"Verified",s:2,sn:"Merch vendor contract signed with Zenith"},
+{k:"risk",t:"Venue deposit is refundable",o:null,st:"Verified",s:1,sn:"Hall B deposit is fully refundable"}];
+const ORDER=["risk","blocker","dependency","next_action","decision"],LABEL={risk:"Risks",blocker:"Blockers",dependency:"Dependencies",next_action:"Next actions",decision:"Decisions"};
+const S={role:"lead",tab:"sources",claims:[],ver:[],rej:[],sel:null,edit:null,filter:"All",ack:false,gen:false};
+const e=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const src=id=>SRC.find(x=>x.id===id);
+const hl=(t,sn)=>{const i=t.indexOf(sn);return i<0?e(t):e(t.slice(0,i))+"<mark>"+e(sn)+"</mark>"+e(t.slice(i+sn.length))};
+const log=(c,a,o,n)=>S.ver.push({id:c.id,who:S.role==="lead"?"Lead":"Member",a,o,n,at:new Date().toLocaleTimeString()});
+function generate(){S.claims=[];S.rej=[];S.ver=[];let n=1;
+ CAND.forEach(c=>{const s=src(c.s);const ok=s&&c.sn&&s.text.includes(c.sn); /* citation enforcement */
+  if(ok)S.claims.push({...c,id:n++,rv:"pending",ans:null});else S.rej.push(c)});
+ S.gen=true;S.sel=null;S.tab="ledger"}
+/* mirrors the get_handover() RPC: approved only, restricted sources redacted for non-leads */
+function handover(role){return S.claims.filter(c=>c.rv==="approved").map(c=>{const s=src(c.s),r=s.access==="lead"&&role!=="lead";
+ return {...c,t:r?"Restricted item (ask a lead)":c.t,stitle:r?"[Restricted source]":s.title,sn:r?"[Redacted]":c.sn,red:r}})}
+const badge=s=>`<span class="badge ${s}">${s==="Verified"?"✓ ":s==="Conflicting"?"⚠ ":s==="Missing"?"? ":"~ "}${s}</span>`;
+function sources(){return SRC.map(s=>`<div class="card"><h3>${e(s.title)}</h3><div class="meta">${s.access==="lead"?"Restricted: leads only":"Visible to everyone"}</div><div class="src">${e(s.text)}</div></div>`).join("")+
+ `<button class="btn" data-a="gen">${S.gen?"Re-run extraction":"Generate handover"}</button>`}
+function panel(){const c=S.claims.find(x=>x.id===S.sel);if(!c)return`<div class="card empty">Select a claim to see its evidence.</div>`;
+ const s=src(c.s);let h=`<div class="card"><h3>Evidence</h3><p class="meta">${e(s.title)}</p><div class="src">${hl(s.text,c.sn)}</div>`;
+ if(c.alt){const a=src(c.alt[0]);h+=`<p class="meta">Conflicts with: ${e(a.title)}</p><div class="src">${hl(a.text,c.alt[1])}</div>`}
+ if(c.ans)h+=`<p class="meta">Interview answer (${e(c.ans.by)}, ${e(c.ans.at)})</p><div class="src"><mark>${e(c.ans.t)}</mark></div>`;
+ h+=`<h3 style="margin-top:12px">Version history</h3>`+(S.ver.filter(v=>v.id===c.id).map(v=>`<div class="log">${v.at} · ${v.who} · ${v.a}${v.o?`: “${e(v.o)}” → “${e(v.n)}”`:""}</div>`).join("")||`<div class="log">No changes yet</div>`);
+ return h+`</div>`}
+function ledger(){if(!S.gen)return`<div class="card empty">Nothing to review yet. Open Sources and generate the handover.</div>`;
+ const f=["All","Verified","Inferred","Conflicting","Missing"];
+ let h=`<div class="card"><b>${S.claims.length} claims kept.</b> ${S.rej.length} rejected before review because their citation was not found in the source: <span class="meta">${S.rej.map(r=>"“"+e(r.t)+"”").join(", ")}</span></div>
+ <div class="acts" style="margin:0 0 12px">${f.map(x=>`<button class="btn sm ${S.filter===x?"":"ghost"}" data-a="filter" data-v="${x}">${x}</button>`).join("")}<button class="btn sm ghost" data-a="appall">Approve all Verified</button></div><div class="grid"><div>`;
+ S.claims.filter(c=>S.filter==="All"||c.st===S.filter).forEach(c=>{const ed=S.edit===c.id;
+  h+=`<div class="card row ${S.sel===c.id?"sel":""}" data-a="sel" data-id="${c.id}">${badge(c.st)} <span class="meta">${e(LABEL[c.k])} · owner: ${e(c.o||"unknown")} · ${c.rv}</span>
+  ${ed?`<textarea id="ed" rows="2">${e(c.t)}</textarea>`:`<p style="margin:6px 0">${e(c.t)}</p>`}
+  <div class="acts">${ed?`<button class="btn sm" data-a="saveedit" data-id="${c.id}">Save edit</button>`:`<button class="btn sm ghost" data-a="edit" data-id="${c.id}">Edit</button>`}
+  <button class="btn sm" data-a="approve" data-id="${c.id}">Approve</button><button class="btn sm ghost" data-a="reject" data-id="${c.id}">Reject</button></div></div>`});
+ return h+`</div><div>${panel()}</div></div>`}
+function interview(){const q=S.claims.filter(c=>c.q&&!c.ans);
+ if(!S.gen)return`<div class="card empty">Generate the handover first.</div>`;
+ if(!q.length)return`<div class="card empty">All gaps answered. Answers are stored as dated evidence. Review them in the Review tab.</div>`;
+ return`<p class="meta">The system found gaps it cannot fill from sources. Answers become dated, attributed evidence.</p>`+q.map(c=>`<div class="card">${badge(c.st)}<p><b>${e(c.q)}</b></p><input id="a${c.id}" placeholder="Type the outgoing member’s answer"><div class="acts"><button class="btn sm" data-a="answer" data-id="${c.id}">Save answer</button></div></div>`).join("")}
+function handoverView(){const hv=handover(S.role);
+ if(!hv.length)return`<div class="card empty">${S.role==="lead"?"No approved claims yet. Approve items in the Review tab to build the handover.":"The lead has not shared a handover yet. Nothing is visible until it is approved."}</div>`;
+ let h=`<p class="meta">Viewing as ${S.role==="lead"?"Lead":"New member"}. Open questions and risks come first.</p>`;
+ ORDER.forEach(k=>{const l=hv.filter(c=>c.k===k);if(!l.length)return;h+=`<h2 style="margin:16px 0 8px">${LABEL[k]}</h2>`+l.map(c=>`<div class="card">${c.red?"":badge(c.st)} <p class="${c.red?"red":""}" style="margin:6px 0">${e(c.t)}</p><div class="meta">Owner: ${e(c.o||"to be assigned")} · Source: ${e(c.stitle)}${c.ans?" · confirmed by interview":""}</div><div class="src ${c.red?"red":""}" style="margin-top:6px">${c.red?e(c.sn):hl(c.sn,c.sn)}</div></div>`).join("")});
+ return h+(S.role==="member"?`<button class="btn" data-a="ack" ${S.ack?"disabled":""}>${S.ack?"Acknowledged ✓":"Acknowledge handover"}</button>`:"")}
+function render(){document.querySelectorAll(".seg button").forEach(b=>b.classList.toggle("on",b.dataset.v===S.role));
+ const tabs=S.role==="lead"?[["sources","Sources"],["ledger","Review"],["interview","Gap interview"],["handover","Handover"]]:[["handover","Handover"]];
+ if(!tabs.some(t=>t[0]===S.tab))S.tab="handover";
+ const guide=S.role==="lead"?"Try it: 1 Generate in Sources. 2 Review claims and answer the gap questions. 3 Approve, then switch to New member.":"You only see approved claims. Restricted sources and their citations are redacted.";
+ document.getElementById("app").innerHTML=`<div class="guide">${guide}</div><nav>${tabs.map(t=>`<button class="${S.tab===t[0]?"on":""}" data-a="tab" data-v="${t[0]}">${t[1]}</button>`).join("")}</nav>`+({sources,ledger,interview,handover:handoverView}[S.tab])()}
+document.addEventListener("click",ev=>{const b=ev.target.closest("[data-a]");if(!b)return;const a=b.dataset.a,v=b.dataset.v,id=+b.dataset.id,c=S.claims.find(x=>x.id===id);
+ if(a==="role"){S.role=v;S.tab=v==="lead"?"sources":"handover"}
+ else if(a==="tab")S.tab=v; else if(a==="gen")generate(); else if(a==="filter")S.filter=v;
+ else if(a==="sel")S.sel=id;
+ else if(a==="edit"){S.edit=id;S.sel=id}
+ else if(a==="saveedit"){const n=document.getElementById("ed").value.trim();if(n&&n!==c.t){log(c,"edited",c.t,n);c.t=n}S.edit=null}
+ else if(a==="approve"){c.rv="approved";log(c,"approved","","");S.sel=id}
+ else if(a==="reject"){c.rv="rejected";log(c,"rejected","","");S.sel=id}
+ else if(a==="appall"){S.claims.filter(x=>x.st==="Verified"&&x.rv==="pending").forEach(x=>{x.rv="approved";log(x,"approved","","")})}
+ else if(a==="answer"){const t=document.getElementById("a"+id).value.trim();if(!t){document.getElementById("a"+id).focus();return}
+  c.ans={t,by:"Outgoing member",at:new Date().toLocaleDateString()};log(c,"gap answered → Verified",c.st,"Verified");c.st="Verified";c.o=c.o||"Named in answer";c.t=c.t.replace(/ is 15 Nov or 20 Nov/," (confirmed: "+t+")")}
+ else if(a==="ack")S.ack=true;
+ render()});
+render();
+</script></body></html>
